@@ -1,5 +1,5 @@
 import { test as setup, expect } from '@playwright/test';
-import { LoginPage } from '../pages/login.page';
+import { LoginPage } from '../pages/loginPage';
 import fs from 'fs';
 import path from 'path';
 
