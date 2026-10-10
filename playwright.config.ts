@@ -2,15 +2,13 @@ import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import path from 'path';
 
-// Load .env explicitly from root
+// Explicitly load .env
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const STORAGE_STATE_PATH = path.resolve(__dirname, '.auth/user.json');
 
 export default defineConfig({
   testDir: './tests',
-  // Match only spec and setup files in tests directory
-  testMatch: /.*(spec|setup)\.ts$/,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -32,27 +30,27 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   projects: [
-    // 1. Setup: Runs first to generate .auth/user.json
+    // 1. Setup project (must match the setup file)
     {
       name: 'setup',
-      testMatch: /.*auth\.setup\.ts$/,
+      testMatch: /auth\.setup\.ts/,
     },
 
-    // 2. Auth Tests: DDT Login specs that run on a clean browser state (no login tokens)
+    // 2. Login DDT tests (runs fresh without saved tokens)
     {
       name: 'auth-tests',
-      testMatch: /.*login\.spec\.ts$/,
+      testMatch: /login\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         storageState: { cookies: [], origins: [] },
       },
     },
 
-    // 3. Authenticated App Tests: Reuses the logged-in session saved by setup
+    // 3. Main authenticated tests (Dashboard, etc.)
     {
       name: 'chromium',
-      testMatch: /.*\.spec\.ts$/,
-      testIgnore: [/.*login\.spec\.ts$/, /.*auth\.setup\.ts$/],
+      testMatch: /.*\.spec\.ts/,
+      testIgnore: [/login\.spec\.ts/],
       use: {
         ...devices['Desktop Chrome'],
         storageState: STORAGE_STATE_PATH,
