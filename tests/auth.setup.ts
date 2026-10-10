@@ -1,14 +1,12 @@
 import { test as setup, expect } from '@playwright/test';
-import { LoginPage } from '../pages/loginPage';
+import { LoginPage } from '../pages/login.page';
 import fs from 'fs';
 import path from 'path';
 
-// Define explicit absolute path to .auth/user.json in project root
 const authDir = path.resolve(__dirname, '../.auth');
 const authFile = path.resolve(authDir, 'user.json');
 
 setup('authenticate user on staging', async ({ page }) => {
-  
   if (!fs.existsSync(authDir)) {
     fs.mkdirSync(authDir, { recursive: true });
   }
@@ -21,10 +19,12 @@ setup('authenticate user on staging', async ({ page }) => {
 
   await loginPage.login(email, password);
 
-  //  Wait for successful login to settle
-  await expect(loginPage.mainContent).toContainText('Live Operations Metrics', { timeout: 15000 });
+  // Crucial: Wait for the post-login page to fully render before taking storage snapshot
+  await expect(loginPage.mainContent).toContainText('Live Operations Metrics', { timeout: 20000 });
   await page.waitForLoadState('networkidle');
 
-  //  Save the storage state
+  // Small delay to let local storage / session cookies finalize write
+  await page.waitForTimeout(2000);
+
   await page.context().storageState({ path: authFile });
 });
