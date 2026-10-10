@@ -1,0 +1,28 @@
+[
+  {
+    "id": "AUTH_TC_01",
+    "description": "Valid Manager Login and Sign Out",
+    "email": "managerqatest@yopmail.com",
+    "useEnvPassword": true,
+    "isValid": true,
+    "expectedContent": "Live Operations Metrics"
+  },
+  {
+    "id": "AUTH_TC_02",
+    "description": "Invalid Password Verification",
+    "email": "managerqatest@yopmail.com",
+    "password": "WrongPassword999!",
+    "useEnvPassword": false,
+    "isValid": false,
+    "expectedContent": "Login"
+  },
+  {
+    "id": "AUTH_TC_03",
+    "description": "Unregistered Email Verification",
+    "email": "nonexistent_manager_qa@yopmail.com",
+    "password": "Admin@123",
+    "useEnvPassword": false,
+    "isValid": false,
+    "expectedContent": "Login"
+  }
+]
