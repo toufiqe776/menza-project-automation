@@ -9,7 +9,7 @@ const STORAGE_STATE_PATH = path.resolve(__dirname, '.auth/user.json');
 
 export default defineConfig({
   testDir: './tests',
-  // Enforces that only files ending in .spec.ts or .setup.ts in tests/ are treated as tests
+  // Match only spec and setup files in tests directory
   testMatch: /.*(spec|setup)\.ts$/,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -52,7 +52,7 @@ export default defineConfig({
     {
       name: 'chromium',
       testMatch: /.*\.spec\.ts$/,
-      testIgnore: [/.*login\.spec\.ts$/],
+      testIgnore: [/.*login\.spec\.ts$/, /.*auth\.setup\.ts$/],
       use: {
         ...devices['Desktop Chrome'],
         storageState: STORAGE_STATE_PATH,

@@ -1,4 +1,3 @@
-// pages/login.page.ts
 import { Page, Locator } from '@playwright/test';
 
 export class LoginPage {
@@ -8,6 +7,7 @@ export class LoginPage {
   readonly loginButton: Locator;
   readonly mainContent: Locator;
   readonly signOutButton: Locator;
+  readonly errorMessage: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -16,8 +16,13 @@ export class LoginPage {
     this.loginButton = page.getByRole('button', { name: 'Login' });
     this.mainContent = page.getByRole('main');
     this.signOutButton = page.getByRole('button', { name: 'Sign Out' });
+    // Common notification/toast/alert locators on PayCaps staging
+    this.errorMessage = page.locator('[role="alert"], .ant-notification-notice, .toast, .text-danger');
   }
 
+  /**
+   * Navigate directly to the login route using configured baseURL
+   */
   async navigate(): Promise<void> {
     await this.page.goto('/login');
   }
@@ -34,9 +39,17 @@ export class LoginPage {
     await this.loginButton.click();
   }
 
-  async login(email: string, password: string): Promise<void> {
-    await this.fillEmail(email);
-    await this.fillPassword(password);
+  /**
+   * Performs full login flow. 
+   * Safely handles undefined/empty strings for negative DDT test cases.
+   */
+  async login(email?: string, password?: string): Promise<void> {
+    if (email !== undefined) {
+      await this.fillEmail(email);
+    }
+    if (password !== undefined) {
+      await this.fillPassword(password);
+    }
     await this.clickLogin();
   }
 
